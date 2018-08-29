@@ -180,6 +180,7 @@ Async client
 
 .. code-block:: python
 
+    import asyncio
     from cs import AIOCloudStack, read_config
 
     cs = AIOCloudStack(**read_config())
