@@ -304,7 +304,7 @@ class RequestTest(TestCase):
     @patch("requests.get")
     def test_signature_v3(self, get):
         cs = CloudStack(endpoint='localhost', key='foo', secret='bar',
-                        expiration=10)
+                        expiration=600)
         get.return_value.status_code = 200
         get.return_value.json.return_value = {
             'createnetworkresponse': {},
@@ -318,4 +318,4 @@ class RequestTest(TestCase):
         # we ignore the timezone for Python2's lack of %z
         expires = datetime.datetime.strptime(params['expires'][:18],
                                              EXPIRES_FORMAT[:-2])
-        assert expires > datetime.datetime.utcnow()
+        assert expires > datetime.datetime.utcnow(), params['expires']
