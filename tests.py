@@ -67,6 +67,7 @@ class ConfigTest(TestCase):
                 'key': 'test key from env',
                 'secret': 'test secret from env',
                 'endpoint': 'https://api.example.com/from-env',
+                'expiration': '600',
                 'method': 'get',
                 'timeout': '10',
                 'verify': True,
@@ -88,6 +89,7 @@ class ConfigTest(TestCase):
                 'key': 'test key from env',
                 'secret': 'test secret from env',
                 'endpoint': 'https://api.example.com/from-env',
+                'expiration': '600',
                 'method': 'post',
                 'timeout': '99',
                 'verify': '/path/to/ca.pem',
@@ -123,7 +125,7 @@ class RequestTest(TestCase):
     @patch('requests.get')
     def test_request_params(self, get):
         cs = CloudStack(endpoint='localhost', key='foo', secret='bar',
-                        timeout=20)
+                        timeout=20, expiration=-1)
         get.return_value.status_code = 200
         get.return_value.json.return_value = {
             'listvirtualmachinesresponse': {},
@@ -148,7 +150,7 @@ class RequestTest(TestCase):
     @patch('requests.get')
     def test_request_params_casing(self, get):
         cs = CloudStack(endpoint='localhost', key='foo', secret='bar',
-                        timeout=20)
+                        timeout=20, expiration=-1)
         get.return_value.status_code = 200
         get.return_value.json.return_value = {
             'listvirtualmachinesresponse': {},
@@ -174,7 +176,8 @@ class RequestTest(TestCase):
 
     @patch('requests.get')
     def test_encoding(self, get):
-        cs = CloudStack(endpoint='localhost', key='foo', secret='bar')
+        cs = CloudStack(endpoint='localhost', key='foo', secret='bar',
+                        expiration=-1)
         get.return_value.status_code = 200
         get.return_value.json.return_value = {
             'listvirtualmachinesresponse': {},
@@ -194,7 +197,8 @@ class RequestTest(TestCase):
 
     @patch("requests.get")
     def test_transform(self, get):
-        cs = CloudStack(endpoint='localhost', key='foo', secret='bar')
+        cs = CloudStack(endpoint='localhost', key='foo', secret='bar',
+                        expiration=-1)
         get.return_value.status_code = 200
         get.return_value.json.return_value = {
             'listvirtualmachinesresponse': {},
@@ -218,7 +222,8 @@ class RequestTest(TestCase):
 
     @patch("requests.get")
     def test_transform_dict(self, get):
-        cs = CloudStack(endpoint='localhost', key='foo', secret='bar')
+        cs = CloudStack(endpoint='localhost', key='foo', secret='bar',
+                        expiration=-1)
         get.return_value.status_code = 200
         get.return_value.json.return_value = {
             'scalevirtualmachineresponse': {},
@@ -240,7 +245,8 @@ class RequestTest(TestCase):
 
     @patch("requests.get")
     def test_transform_empty(self, get):
-        cs = CloudStack(endpoint='localhost', key='foo', secret='bar')
+        cs = CloudStack(endpoint='localhost', key='foo', secret='bar',
+                        expiration=-1)
         get.return_value.status_code = 200
         get.return_value.json.return_value = {
             'createnetworkresponse': {},
@@ -262,7 +268,7 @@ class RequestTest(TestCase):
     @patch("requests.get")
     def test_method(self, get, post):
         cs = CloudStack(endpoint='localhost', key='foo', secret='bar',
-                        method='post')
+                        method='post', expiration=-1)
         post.return_value.status_code = 200
         post.return_value.json.return_value = {
             'listvirtualmachinesresponse': {},
