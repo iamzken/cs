@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import os
 import sys
+import datetime
 
 from contextlib import contextmanager
 from functools import partial
@@ -14,6 +15,7 @@ except ImportError:
     from mock import patch, call
 
 from cs import CloudStack, CloudStackException, read_config
+from cs.client import EXPIRES_FORMAT
 
 
 @contextmanager
@@ -298,3 +300,22 @@ class RequestTest(TestCase):
                                             'errortext': 'Fail'}}
         cs = CloudStack(endpoint='localhost', key='foo', secret='bar')
         self.assertRaises(CloudStackException, cs.listVirtualMachines)
+
+    @patch("requests.get")
+    def test_signature_v3(self, get):
+        cs = CloudStack(endpoint='localhost', key='foo', secret='bar',
+                        expiration=10)
+        get.return_value.status_code = 200
+        get.return_value.json.return_value = {
+            'createnetworkresponse': {},
+        }
+        cs.createNetwork(name="", display_text="")
+
+        _, kwargs = get.call_args
+        params = kwargs['params']
+        assert '3' == params['signatureVersion'], kwargs
+
+        # we ignore the timezone for Python2's lack of %z
+        expires = datetime.datetime.strptime(params['expires'][:18],
+                                             EXPIRES_FORMAT[:-2])
+        assert expires > datetime.datetime.utcnow()
